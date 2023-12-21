@@ -2,7 +2,7 @@ server:
   port: 8080
 spring:
   application:
-    name: App
+    name: ${APP_NAME:}
   main:
     lazy-initialization: true
     keep-alive: true

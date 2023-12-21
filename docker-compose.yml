@@ -7,6 +7,7 @@ x-common:
       context: .
       dockerfile: ./app/Dockerfile
     environment:
+      &common-app-environment
       X_API_KEY: ${X_API_KEY}
       JAVA_OPTS: -Dspring.profiles.active=${ENV} -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XshowSettings:vm -XX:+PrintCommandLineFlags -XX:+TieredCompilation
     mem_limit: 512m
@@ -66,5 +67,11 @@ services:
 
   app-1:
     <<: *common-app
+    environment:
+      <<: *common-app-environment
+      APP_NAME: app-1
   app-2:
     <<: *common-app
+    environment:
+      <<: *common-app-environment
+      APP_NAME: app-2

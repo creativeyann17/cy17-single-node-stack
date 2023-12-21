@@ -90,7 +90,6 @@ public class StatusEndpoint {
   public String app() {
     this.checkIsSystem();
     String builder = "Name: " + appName + "\n" +
-      "UUID: " + App.UUID + "\n" +
       "Profiles: " + Arrays.toString(ctx.getEnvironment().getActiveProfiles()) + "\n" +
       "Server time: " + LocalDateTime.now().format(SIMPLE_FORMATTER) + "\n" +
       "Uptime: " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - ctx.getStartupDate(), DATE_TIME_FORMAT, true) + "\n" +
