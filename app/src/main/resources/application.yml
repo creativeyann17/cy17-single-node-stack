@@ -1,0 +1,47 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: App
+  main:
+    lazy-initialization: true
+    keep-alive: true
+    banner-mode: "off"
+  threads:
+    virtual:
+      enabled: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: true
+      additional-paths: templates/
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,status
+security:
+  enabled: true
+  apiKey: ${X_API_KEY:}
+  eviction: 60 # minutes / cleanup
+  publics:
+    - "/actuator/health"
+    - "/favicon.icon"
+logging:
+  file:
+    name: "./logs/app.log"
+    max-history: 10
+    max-size: 10MB
+    total-size-cap: 100MB
+  level:
+    root: ERROR
+    org.springframework.web: ERROR
+    org.hibernate: ERROR
+    com.creativeyann17: INFO
+status:
+  enabled: ${STATUS_ENABLED:true}
+  logs-size: 100

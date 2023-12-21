@@ -1,0 +1,20 @@
+:root {
+  --primary: #000;
+  --secondary: #eee;
+}
+
+html {
+  color: var(--primary);
+  background-color: var(--secondary);
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.page {
+  margin: 1rem;
+}
+
+@media (max-width: 1024px) {
+}

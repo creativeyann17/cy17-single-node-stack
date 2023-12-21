@@ -1,0 +1,8 @@
+server:
+  port: 7979
+logging:
+  level:
+    root: INFO
+    com.creativeyann17: DEBUG
+security:
+  apiKey: foo

@@ -1,0 +1,70 @@
+version: '3'
+
+x-common:
+  app:
+    &common-app
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    environment:
+      X_API_KEY: ${X_API_KEY}
+      JAVA_OPTS: -Dspring.profiles.active=${ENV} -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XshowSettings:vm -XX:+PrintCommandLineFlags -XX:+TieredCompilation
+    mem_limit: 512m
+    cpus: 0.5
+    volumes:
+      - /var/log/app:/app/logs
+    depends_on:
+      - gateway
+    healthcheck:
+      &common-healthcheck
+      test: curl -Is localhost:8080/actuator/health | head -n 1 | grep 200 || exit 1
+      interval: 10s
+      timeout: 15s
+      retries: 5
+    restart: unless-stopped
+  ui:
+    &common-ui
+    build:
+      context: .
+      dockerfile: ./ui/Dockerfile
+      args:
+        ENV: ${ENV}
+    mem_limit: 64m
+    cpus: 0.5
+    depends_on:
+      - gateway
+    healthcheck:
+      <<: *common-healthcheck
+      test: curl -Is localhost:80 | head -n 1 | grep 200 || exit 1
+    restart: unless-stopped
+
+services:
+  gateway:
+    image: nginx:1.24.0-alpine
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      DOMAIN: ${DOMAIN}
+      LIMIT_RATE_REQ_SEC: ${LIMIT_RATE_REQ_SEC}
+      LIMIT_RATE_BURST: ${LIMIT_RATE_BURST}
+    mem_limit: 128m
+    cpus: 1
+    volumes:
+      - ./nginx-gateway.conf:/etc/nginx/templates/default.conf.template
+      - /var/log/nginx:/var/log/nginx
+      - ${CERTS_PATH}:/certs:ro
+    healthcheck:
+      <<: *common-healthcheck
+      test: service nginx status || exit 1
+    restart: always
+
+  ui-1:
+    <<: *common-ui
+  ui-2:
+    <<: *common-ui
+
+  app-1:
+    <<: *common-app
+  app-2:
+    <<: *common-app
