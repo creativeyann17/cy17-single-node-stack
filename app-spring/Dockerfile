@@ -1,6 +1,6 @@
 FROM maven:3.9.4-amazoncorretto-21 as build-app
 WORKDIR /tmp/app
-COPY app/ .
+COPY app-spring/ .
 RUN mvn clean install -DskipTests
 
 FROM amazoncorretto:21-alpine as build-jre

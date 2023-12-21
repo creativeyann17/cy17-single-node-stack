@@ -76,7 +76,7 @@ public class Status {
   }
 
   public String logs(Context ctx) {
-    var maxSize = Optional.ofNullable(ctx).map(c -> c.queryParam("size")).map(Long::parseLong).orElse(50L);
+    var maxSize = Optional.ofNullable(ctx).map(c -> c.queryParamAsClass("size", Long.class).allowNullable().get()).orElse(50L);
     StringBuilder builder = new StringBuilder();
     try {
       var lines = Files.readAllLines(Path.of("./logs/app.log"));

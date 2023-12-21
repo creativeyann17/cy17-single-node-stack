@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import io.javalin.Javalin;
+import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
 import io.javalin.http.HttpStatus;
@@ -33,8 +34,6 @@ public class App {
 
   static {
     setRootLevel("prod".equals(ENV) ? Level.ERROR : Level.INFO);
-    log.info("App is starting with Cores: {}", Runtime.getRuntime().availableProcessors());
-    log.info("Current profile: {}", ENV);
   }
 
   public static void main(String[] args) {
@@ -79,10 +78,17 @@ public class App {
       .get("/actuator/status/monitors", status::monitors, Role.SYSTEM)
       .get("/actuator/status/logs", status::logs, Role.SYSTEM)
       .get("/api/v1/hello", ctx -> ctx.result("Hello World"), Role.ANONYMOUS)
+      .events(event -> {
+        event.serverStarting(() -> {
+          log.info("App is starting with Cores: {}", Runtime.getRuntime().availableProcessors());
+          log.info("Current profile: {}", ENV);
+        });
+        event.serverStarted(() -> {
+          log.info("HTTP server started on port: " + PORT);
+          log.info("App started in {}ms", System.currentTimeMillis() - START);
+        });
+      })
       .start(PORT);
-
-    log.info("HTTP server started on port: " + PORT);
-    log.info("App started in {}ms", System.currentTimeMillis() - START);
 
     Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
   }
