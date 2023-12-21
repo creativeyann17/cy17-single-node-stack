@@ -28,7 +28,7 @@ class SecurityFilterTest {
 
   @BeforeEach
   void beforeEach() {
-    when(currentRequest.getHeader(Const.RequestHeader.X_API_KEY.name())).thenReturn(null);
+    when(currentRequest.getHeader(Const.RequestHeader.X_API_KEY.value)).thenReturn(null);
     when(configuration.isEnabled()).thenReturn(true);
     when(configuration.getApiKey()).thenReturn("foo");
   }
@@ -43,7 +43,7 @@ class SecurityFilterTest {
 
   @Test
   void unauthorized() {
-    when(currentRequest.getHeader(Const.RequestHeader.X_API_KEY.name())).thenReturn("bar");
+    when(currentRequest.getHeader(Const.RequestHeader.X_API_KEY.value)).thenReturn("bar");
     ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
       filter.doFilterInternal(currentRequest, null, filterChain);
     });
@@ -53,7 +53,7 @@ class SecurityFilterTest {
 
   @Test
   void isSystem() throws ServletException, IOException {
-    when(currentRequest.getHeader(Const.RequestHeader.X_API_KEY.name())).thenReturn("foo");
+    when(currentRequest.getHeader(Const.RequestHeader.X_API_KEY.value)).thenReturn("foo");
     filter.doFilterInternal(currentRequest, null, filterChain);
     verify(currentRequest).setAttribute(Const.RequestAttr.x_req_is_system.name(), true);
     when(currentRequest.getAttribute(Const.RequestAttr.x_req_is_system.name())).thenReturn(true);

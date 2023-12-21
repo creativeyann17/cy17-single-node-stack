@@ -48,7 +48,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     boolean isSystemUser = false;
     var apiKey = securityConfiguration.getApiKey();
     if (StringUtils.isNotBlank(apiKey)) {
-      var userApiKey = request.getHeader(Const.RequestHeader.X_API_KEY.name());
+      var userApiKey = request.getHeader(Const.RequestHeader.X_API_KEY.value);
       if (userApiKey != null) {
         if (apiKey.equals(userApiKey)) {
           isSystemUser = true;

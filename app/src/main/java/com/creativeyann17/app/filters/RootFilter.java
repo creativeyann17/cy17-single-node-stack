@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import java.util.Optional;
+
 @Component
 @Order(0)
 @Slf4j
@@ -40,8 +42,12 @@ public class RootFilter extends OncePerRequestFilter {
   private void logRequest(HttpServletRequest request, HttpServletResponse response) {
     if (securityConfiguration.getPublics().stream().noneMatch(p -> request.getRequestURI().equals(p))) {
       long start = (long) request.getAttribute(Const.RequestAttr.x_req_start.name());
-      log.info("{} {} {} {} in {} ms", request.getRemoteAddr(), request.getMethod(), response.getStatus(), request.getRequestURI(), System.currentTimeMillis() - start);
+      log.info("{} {} {} {} in {} ms", getRemoteAddr(request), request.getMethod(), response.getStatus(), request.getRequestURI(), System.currentTimeMillis() - start);
     }
+  }
+
+  private String getRemoteAddr(HttpServletRequest request) {
+    return Optional.ofNullable(request.getHeader(Const.RequestHeader.X_Real_IP.value)).orElse(request.getRemoteAddr());
   }
 
 }
