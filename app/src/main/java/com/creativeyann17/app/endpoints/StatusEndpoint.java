@@ -77,11 +77,7 @@ public class StatusEndpoint {
   public String java() {
     this.checkIsSystem();
     String builder = "Version: " + System.getProperty("java.version") + "\n" +
-      "Home: " + System.getProperty("java.home") + "\n" +
-      "Max memory: " + Runtime.getRuntime().maxMemory() + " (" + FileUtils.byteCountToDisplaySize(Runtime.getRuntime().maxMemory()) + ")\n" +
-      "Free memory: " + Runtime.getRuntime().freeMemory() + " (" + FileUtils.byteCountToDisplaySize(Runtime.getRuntime().freeMemory()) + ")\n" +
-      "Total memory: " + Runtime.getRuntime().totalMemory() + " (" + FileUtils.byteCountToDisplaySize(Runtime.getRuntime().totalMemory()) + ")\n" +
-      "Available processors: " + Runtime.getRuntime().availableProcessors() + "\n" +
+      "Max memory: " + FileUtils.byteCountToDisplaySize(Runtime.getRuntime().maxMemory()).replace(" ", "") + " CPUs: " + Runtime.getRuntime().availableProcessors() + "\n" +
       "\n";
     return builder;
   }
