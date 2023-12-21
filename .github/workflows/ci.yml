@@ -15,7 +15,7 @@ jobs:
           distribution: 'oracle'
           cache: maven
       - name: Build
-        working-directory: api
+        working-directory: app
         run: mvn --batch-mode --update-snapshots verify
   ui:
     name: UI
@@ -32,7 +32,6 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install
-        run: npm install
       - name: Build
-        run: npm run build
+        working-directory: ui
+        run: npm install && npm run build
