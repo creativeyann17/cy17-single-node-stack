@@ -15,7 +15,7 @@ jobs:
           distribution: 'oracle'
           cache: maven
       - name: Build
-        working-directory: app
+        working-directory: app-spring
         run: mvn --batch-mode --update-snapshots verify
   ui:
     name: UI

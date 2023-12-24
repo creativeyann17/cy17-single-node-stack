@@ -5,7 +5,7 @@ x-common:
     &common-app
     build:
       context: .
-      dockerfile: ./app-javalin/Dockerfile
+      dockerfile: ./app-jetty/Dockerfile
     environment:
       &common-app-environment
       X_API_KEY: ${X_API_KEY}
