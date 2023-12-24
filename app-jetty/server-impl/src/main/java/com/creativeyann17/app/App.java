@@ -76,7 +76,7 @@ public class App {
   private static List<Role> getUserRoles(Context ctx) {
     var roles = new ArrayList<Role>();
     roles.add(Role.ANONYMOUS);
-    var userApiKey = ctx.request().getHeader("X-API-KEY");
+    var userApiKey = ctx.request().header("X-API-KEY");
     if (userApiKey != null) {
       if (X_API_KEY.equals(userApiKey)) {
         roles.add(Role.SYSTEM);

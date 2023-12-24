@@ -1,6 +1,7 @@
 package com.creativeyann17.server.context;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Callback;
 
@@ -13,7 +14,7 @@ public class Context {
 
   public Context(org.eclipse.jetty.server.Request request, org.eclipse.jetty.server.Response response, Callback callback, ObjectMapper objectMapper) {
     this.request = new Request(request);
-    this.response = new Response(response);
+    this.response = new Response(request, response);
     this.callback = callback;
     this.objectMapper = objectMapper;
   }
@@ -46,6 +47,14 @@ public class Context {
     return this.request;
   }
 
+  public void header(HttpHeader header, Object value) {
+    response.header(header, value);
+  }
+
+  public void header(String name, Object value) {
+    response.header(name, value);
+  }
+  
   public Response response() {
     return this.response;
   }

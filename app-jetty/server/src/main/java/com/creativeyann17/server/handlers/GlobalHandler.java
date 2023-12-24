@@ -2,6 +2,7 @@ package com.creativeyann17.server.handlers;
 
 import com.creativeyann17.server.context.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -14,6 +15,7 @@ public class GlobalHandler extends Handler.Abstract {
   private final ObjectMapper objectMapper;
   private final ErrorHandler errorHandler = new ErrorHandler();
   private final RoutesHandler routesHandler = new RoutesHandler();
+  private final CorsHandler corsHandler = new CorsHandler();
 
   private Consumer<Context> before;
   private Consumer<Context> after;
@@ -29,7 +31,11 @@ public class GlobalHandler extends Handler.Abstract {
       if (this.before != null) {
         this.before.accept(context);
       }
-      this.routesHandler.handle(context);
+      if (request.getMethod().equals(HttpMethod.OPTIONS.name())) {
+        corsHandler.handle(context);
+      } else {
+        this.routesHandler.handle(context);
+      }
     } catch (Exception e) {
       // avoid jetty error handler
       this.errorHandler.handle(e, context);

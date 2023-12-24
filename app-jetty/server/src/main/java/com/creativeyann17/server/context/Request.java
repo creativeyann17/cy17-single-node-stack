@@ -1,5 +1,6 @@
 package com.creativeyann17.server.context;
 
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 
 import java.util.HashMap;
@@ -46,6 +47,10 @@ public class Request {
     return request.getHeaders().get(name);
   }
 
+  public String header(HttpHeader header) {
+    return request.getHeaders().get(header);
+  }
+
   public String queryParam(String key) {
     this.extractQueryParams();
     return queryParams.get(key);
@@ -55,7 +60,4 @@ public class Request {
     return request.getConnectionMetaData().getRemoteSocketAddress().toString();
   }
 
-  public String getHeader(String name) {
-    return request.getHeaders().get(name);
-  }
 }

@@ -58,6 +58,17 @@ class RoutesHandlerTest {
   }
 
   @Test
+  void handle_HEAD_route() {
+    routesHandler.add(HttpMethod.GET, "/foo", ctx -> {
+      ctx.text(HttpStatus.NO_CONTENT_204, "bar");
+    });
+    when(request.getMethod()).thenReturn(HttpMethod.HEAD.name());
+    when(httpURI.getPath()).thenReturn("/foo");
+    routesHandler.handle(ctx);
+    verify(response).setStatus(HttpStatus.NO_CONTENT_204);
+  }
+
+  @Test
   void handle_sub_route() {
     routesHandler.subRoute("/path")
         .add(HttpMethod.POST, "/foo", ctx -> {

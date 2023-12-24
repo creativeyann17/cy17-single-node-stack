@@ -96,7 +96,7 @@ public class RoutesHandler {
     }
 
     public boolean matches(Context ctx) {
-      return ctx.request().method().equals(method) && ctx.request().path().equals(fullPath());
+      return ctx.request().method().equals(HttpMethod.HEAD) || ctx.request().method().equals(method) && ctx.request().path().equals(fullPath());
     }
 
     public boolean hasRole(List<? extends RouteRole> userRoles) {
