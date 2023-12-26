@@ -14,32 +14,32 @@ import java.util.stream.Stream;
 
 public class RoutesHandler {
 
-  private final Route rootRoute = new Route(null, "/", null, null);
+  private final Route rootRoute = new Route(null, "", null, null);
   private AccessHandler accessHandler = new AccessHandlerImpl();
 
   public void handle(Context ctx) {
-    if (!handle(ctx, rootRoute)) {
+    if (!handle(ctx, rootRoute.routes)) {
       ctx.empty(HttpStatus.NOT_FOUND_404);
     }
   }
 
-  private boolean handle(Context ctx, Route route) {
-    if (route.isSubRoute()) {
-      for (Route subRoute : route.routes) {
-        if (this.handle(ctx, subRoute)) {
+  private boolean handle(Context ctx, List<Route> routes) {
+    for (Route route : routes) {
+      if (route.isSubRoute()) {
+        if (this.handle(ctx, route.routes)) {
           return true;
         }
-      }
-    } else {
-      if (route.matches(ctx)) {
-        var roles = this.accessHandler.apply(ctx);
-        if (route.hasRole(roles)) {
-          ctx.request().setRoute(route);
-          route.handler.accept(ctx);
-        } else {
-          ctx.empty(HttpStatus.FORBIDDEN_403);
+      } else {
+        if (route.matches(ctx)) {
+          var roles = this.accessHandler.apply(ctx);
+          if (route.hasRole(roles)) {
+            ctx.request().setRoute(route);
+            route.handler.accept(ctx);
+          } else {
+            ctx.empty(HttpStatus.FORBIDDEN_403);
+          }
+          return true;
         }
-        return true;
       }
     }
     return false;
@@ -67,6 +67,7 @@ public class RoutesHandler {
     private final RouteRole[] roles;
     private List<Route> routes;
     private Map<String, Integer> params;
+    private final String fullPath;
 
     public Route(HttpMethod method, String path, Consumer<Context> handler, Route parent, RouteRole... roles) {
       this.method = method;
@@ -77,6 +78,7 @@ public class RoutesHandler {
       if (isSubRoute()) {
         this.routes = new ArrayList<>();
       }
+      this.fullPath = computeFullPath();
     }
 
     public Route add(HttpMethod method, String path, Consumer<Context> handler, RouteRole... roles) {
@@ -93,11 +95,15 @@ public class RoutesHandler {
     }
 
     public String fullPath() {
+     return this.fullPath;
+    }
+
+    private String computeFullPath() {
       String fullPath = "";
       if (parent != null) {
         fullPath += parent.fullPath();
       }
-      return fullPath + this.path;
+      return (fullPath + this.path).replaceFirst("//","/");
     }
 
     public boolean isSubRoute() {
@@ -105,7 +111,7 @@ public class RoutesHandler {
     }
 
     public boolean matches(Context ctx) {
-      return List.of(HttpMethod.HEAD, method).contains(ctx.request().method()) && ctx.request().path().matches(fullPath());
+      return List.of(HttpMethod.HEAD, method).contains(ctx.request().method()) && ctx.request().path().matches(fullPath);
     }
 
     public boolean hasRole(List<? extends RouteRole> userRoles) {
@@ -117,7 +123,7 @@ public class RoutesHandler {
     }
 
     private String parsePathParam(String path) {
-      String pathWithParam = "";
+      String pathWithParam = "/";
       var parts = sanitizePath(path).split("/");
       for (int i = 0; i < parts.length; i++) {
         var part = parts[i];
@@ -132,7 +138,7 @@ public class RoutesHandler {
           }
         }
       }
-      return pathWithParam;
+      return pathWithParam.replaceFirst("//","/");
     }
 
     private String sanitizePath(String path) {

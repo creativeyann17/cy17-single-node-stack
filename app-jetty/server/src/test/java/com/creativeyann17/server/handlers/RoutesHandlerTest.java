@@ -165,6 +165,17 @@ class RoutesHandlerTest {
   }
 
   @Test
+  void handle_route_root() {
+    routesHandler.add(HttpMethod.GET, "/", ctx -> {
+      ctx.text(HttpStatus.NO_CONTENT_204, "");
+    });
+    when(request.getMethod()).thenReturn(HttpMethod.GET.name());
+    when(httpURI.getPath()).thenReturn("/");
+    routesHandler.handle(ctx);
+    verify(response).setStatus(HttpStatus.NO_CONTENT_204);
+  }
+
+  @Test
   void handle_route_with_query_param() {
     routesHandler.add(HttpMethod.GET, "/foo", ctx -> {
       ctx.text(HttpStatus.NO_CONTENT_204, "");
@@ -180,6 +191,7 @@ class RoutesHandlerTest {
 
   @Test
   void check_route_path() {
+    assertEquals("/", new RoutesHandler.Route(HttpMethod.GET, "/", null, null).fullPath());
     assertEquals("/foo/bar", new RoutesHandler.Route(HttpMethod.GET, "foo////bar//", null, null).fullPath());
     assertEquals("/foo/\\w+/bar/\\w+", new RoutesHandler.Route(HttpMethod.GET, "/foo/:param1/bar/*", null, null).fullPath());
     assertEquals(Map.of("param1",2, "param2", 4), new RoutesHandler.Route(HttpMethod.GET, "/foo/:param1/bar/:param2", null, null).getParams());
