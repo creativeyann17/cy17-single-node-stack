@@ -15,7 +15,7 @@ public class RequestLogger {
 
   public void after(Context ctx) {
     if (App.PUBLICS.stream().noneMatch(p -> ctx.request().path().equals(p))) {
-      long start = (long) ctx.request().attribute("x_req_start");
+      long start = ctx.request().attribute("x_req_start", Long.class);
       log.info("{} {} {} {} in {} ms", getRemoteAddr(ctx.request()), ctx.request().method(), ctx.response().status(), ctx.request().path(), System.currentTimeMillis() - start);
     }
   }

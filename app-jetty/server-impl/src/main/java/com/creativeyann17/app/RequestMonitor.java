@@ -11,6 +11,6 @@ public class RequestMonitor {
   }
 
   public void after(Context ctx) {
-    ((Monitor) ctx.request().attribute("monitor")).stop();
+    ctx.request().attribute("monitor", Monitor.class).stop();
   }
 }
