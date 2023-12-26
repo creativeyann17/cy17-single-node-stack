@@ -1,5 +1,6 @@
 package com.creativeyann17.server.context;
 
+import com.creativeyann17.server.handlers.RoutesHandler;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
@@ -8,14 +9,10 @@ public class Request {
 
   private final org.eclipse.jetty.server.Request request;
   private Fields queryParams;
+  private RoutesHandler.Route route;
 
   public Request(org.eclipse.jetty.server.Request request) {
     this.request = request;
-  }
-
-  private void extractQueryParams() {
-    if (queryParams == null)
-      this.queryParams = org.eclipse.jetty.server.Request.extractQueryParameters(request);
   }
 
   public HttpMethod method() {
@@ -43,12 +40,21 @@ public class Request {
   }
 
   public String queryParam(String name) {
-    this.extractQueryParams();
+    if (this.queryParams == null)
+      this.queryParams = org.eclipse.jetty.server.Request.extractQueryParameters(request);
     return queryParams.getValue(name);
+  }
+
+  public String pathParam(String name) {
+    return path().split("/")[route.getParams().get(name)];
   }
 
   public String getRemoteAddr() {
     return org.eclipse.jetty.server.Request.getRemoteAddr(request);
+  }
+
+  public void setRoute(RoutesHandler.Route route) {
+    this.route = route;
   }
 
 }

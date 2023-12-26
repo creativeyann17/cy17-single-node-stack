@@ -61,6 +61,9 @@ public class App {
           .add(HttpMethod.GET, "/status/monitors", status::monitors)
           .add(HttpMethod.GET, "/status/logs", status::logs);
         routes
+          .add(HttpMethod.GET, "/api/v1/param/:param", ctx -> {
+            ctx.text(ctx.request().pathParam("param"));
+          })
           .add(HttpMethod.GET, "/api/v1/hello", ctx -> ctx.text("Hello World!"));
       })
       .after(ctx -> {

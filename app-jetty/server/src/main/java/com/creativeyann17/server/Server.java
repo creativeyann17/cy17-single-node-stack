@@ -20,7 +20,8 @@ public class Server {
 
   private Server(int port) {
     QueuedThreadPool threadPool = new QueuedThreadPool();
-    threadPool.setVirtualThreadsExecutor(Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("virtual-", 0).factory()));
+    //threadPool.setVirtualThreadsExecutor(Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("virtual-", 0).factory()));
+    threadPool.setVirtualThreadsExecutor(Executors.newVirtualThreadPerTaskExecutor());
     threadPool.setName("server");
 
     this.server = new org.eclipse.jetty.server.Server(threadPool);
