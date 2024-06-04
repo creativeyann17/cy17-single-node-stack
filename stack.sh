@@ -1,7 +1,6 @@
 #!/bin/bash
 
 STACK_NAME="stack"
-ENV="${1}"
 
 showUsage()
 {

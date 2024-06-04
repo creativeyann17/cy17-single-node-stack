@@ -4,8 +4,8 @@ x-common:
   app:
     &common-app
     build:
-      context: .
-      dockerfile: ./app-jetty/Dockerfile
+      context: ./app-go-chi/
+      dockerfile: ./Dockerfile
     environment:
       &common-app-environment
       X_API_KEY: ${X_API_KEY}
