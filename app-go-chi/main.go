@@ -33,8 +33,13 @@ func main() {
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
   var health = Status{Status: "OK"}
+  WriteJSON(w, 200, health)
+}
+
+func WriteJSON(w http.ResponseWriter, status int, data any) {
   w.Header().Set("Content-Type", "application/json")
-  if err := json.NewEncoder(w).Encode(health); err != nil {
+  w.WriteHeader(status)
+  if err := json.NewEncoder(w).Encode(data); err != nil {
     w.WriteHeader(http.StatusInternalServerError)
     w.Write([]byte("internal server error"))
   }
