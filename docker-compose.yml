@@ -4,13 +4,13 @@ x-common:
   app:
     &common-app
     build:
-      context: ./app-go-chi/
+      context: ./app-go-fiber/
       dockerfile: ./Dockerfile
     environment:
       &common-app-environment
       X_API_KEY: ${X_API_KEY}
       JAVA_OPTS: -Dspring.profiles.active=${ENV} -Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XshowSettings:vm -XX:+PrintCommandLineFlags -XX:+TieredCompilation
-    mem_limit: 512m
+    mem_limit: 32m
     cpus: 0.5
     volumes:
       - /var/log/app:/app/logs
@@ -30,7 +30,7 @@ x-common:
       dockerfile: ./ui/Dockerfile
       args:
         ENV: ${ENV}
-    mem_limit: 64m
+    mem_limit: 32m
     cpus: 0.5
     depends_on:
       - gateway
@@ -49,7 +49,7 @@ services:
       DOMAIN: ${DOMAIN}
       LIMIT_RATE_REQ_SEC: ${LIMIT_RATE_REQ_SEC}
       LIMIT_RATE_BURST: ${LIMIT_RATE_BURST}
-    mem_limit: 128m
+    mem_limit: 64m
     cpus: 1
     volumes:
       - ./nginx-gateway.conf:/etc/nginx/templates/default.conf.template
