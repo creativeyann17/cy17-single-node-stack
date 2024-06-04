@@ -97,6 +97,8 @@ rolling()
 
 logs()
 {
+  # lumberjack create logs in 600 mode
+  # sudo chmod 644 /var/log/app/app.log
   tail -f /var/log/app/app.log
 }
 
