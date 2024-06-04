@@ -1,7 +1,7 @@
 root = "."
 tmp_dir = "tmp"
 [build]
-  cmd = "gofmt -s -w . && go build -o ./tmp/main ."
+  cmd = "go vet ./... && go fmt ./... && go build -o ./tmp/main ."
   bin = "./tmp/main"
   delay = 1000 # ms
   exclude_dir = ["logs", "tmp"]

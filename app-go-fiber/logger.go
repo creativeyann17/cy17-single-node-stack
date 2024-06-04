@@ -12,12 +12,12 @@ import (
 type LogLevel string
 
 const (
-	DEBUG LogLevel = "DEBUG"
-	INFO  LogLevel = "INFO"
-	ERROR LogLevel = "ERROR"
+	DEBUG LogLevel = "debug"
+	INFO  LogLevel = "info"
+	ERROR LogLevel = "error"
 )
 
-var LOG_LEVEL = LogLevel(getEnvOrDefault("LOG_LEVEL", "DEBUG"))
+var LOG_LEVEL = LogLevel(getEnvOrDefault("LOG_LEVEL", string(DEBUG)))
 
 type Logger struct {
 	fileLogger *slog.Logger
@@ -62,7 +62,7 @@ func (logger *Logger) Debug(msg string) {
 }
 
 func (l *Logger) caller() string {
-	_, fullFile, line, ok := runtime.Caller(3)
+	_, fullFile, line, ok := runtime.Caller(2)
 	if ok {
 		splitPath := strings.Split(fullFile, "/")
 		file := splitPath[len(splitPath)-1]

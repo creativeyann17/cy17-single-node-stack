@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"runtime"
 	"runtime/debug"
 	"slices"
 	"time"
@@ -43,6 +44,8 @@ func main() {
 		}
 	})
 
+	logger.Info(fmt.Sprintf("App is starting with Cores: %d", runtime.NumCPU()))
+	logger.Info(fmt.Sprintf("Current log level: %s", LOG_LEVEL))
 	log.Fatal(app.Listen(":8080"))
 }
 
