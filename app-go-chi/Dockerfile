@@ -12,7 +12,6 @@ FROM alpine
 WORKDIR /app
 COPY --from=build /build/app .
 RUN apk add --no-cache curl
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 RUN mkdir logs
-USER appuser
+
 ENTRYPOINT ["./app"]

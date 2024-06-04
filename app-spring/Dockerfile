@@ -18,12 +18,10 @@ RUN jlink \
 
 FROM alpine:latest
 RUN apk add --no-cache curl
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 ENV JAVA_HOME=/jre
 ENV PATH="$PATH:$JAVA_HOME/bin"
 COPY --from=build-jre /tmp/jre/slim $JAVA_HOME
 COPY --from=build-app /tmp/app/target/app-0.0.1-SNAPSHOT.jar app.jar
-RUN mkdir logs
-USER appuser
+
 ENTRYPOINT java $JAVA_OPTS -jar app.jar
