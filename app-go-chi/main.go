@@ -26,14 +26,21 @@ func main() {
 		w.Write([]byte(r.PathValue("param")))
 	})
 
-  r.Get("/actuator/health", func(w http.ResponseWriter, r *http.Request) {
-    var health = Status{Status: "OK"}
-    w.Header().Set("Content-Type", "application/json")
-    if err := json.NewEncoder(w).Encode(health); err != nil {
-      w.WriteHeader(http.StatusInternalServerError)
-      w.Write([]byte("internal server error"))
-  }
-  })
+  GetHead(r, "/actuator/health", healthHandler)
 
 	http.ListenAndServe(":8080", r)
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+  var health = Status{Status: "OK"}
+  w.Header().Set("Content-Type", "application/json")
+  if err := json.NewEncoder(w).Encode(health); err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    w.Write([]byte("internal server error"))
+  }
+}
+
+func GetHead(r chi.Router, pattern string, h http.HandlerFunc) {
+	r.Get(pattern, h)
+	r.Head(pattern, h)
 }
