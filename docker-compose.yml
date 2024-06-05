@@ -11,7 +11,7 @@ x-common:
       X_API_KEY: ${X_API_KEY}
       LOG_LEVEL: ${LOG_LEVEL}
       JAVA_OPTS: -Dspring.profiles.active=${ENV} -Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XshowSettings:vm -XX:+PrintCommandLineFlags -XX:+TieredCompilation
-      #GOMAXPROCS: "1" # otherwise go will use all available cores of the nodes
+      GOMAXPROCS: "1" # otherwise go will use all available cores of the nodes
     mem_limit: 32m
     cpus: 0.5
     volumes:
@@ -43,7 +43,7 @@ x-common:
 
 services:
   gateway:
-    image: nginx:1.24.0
+    image: nginx:1.24.0-alpine
     ports:
       - 80:80
       - 443:443

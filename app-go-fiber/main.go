@@ -27,7 +27,7 @@ var CPU_COUNT = runtime.GOMAXPROCS(0)
 func main() {
 
 	app := fiber.New(fiber.Config{
-		Prefork:       false, // probably great in multi-core environments
+		Prefork:       true, // probably great in multi-core environments
 		CaseSensitive: true,
 		StrictRouting: true,
 		ProxyHeader:   "X-Real-IP",
