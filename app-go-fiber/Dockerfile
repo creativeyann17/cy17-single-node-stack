@@ -1,11 +1,12 @@
 FROM golang:1.22.3-alpine AS build
 WORKDIR /build
 
-COPY go.mod go.sum ./
+COPY go.mod ./
+COPY go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o app .
+RUN CGO_ENABLED=0 GOOS=linux GARCH=amd64 go build -ldflags="-s -w" -installsuffix cgo -o app .
 #RUN apk add --no-cache upx && upx --best app
 
 FROM alpine
