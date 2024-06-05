@@ -17,7 +17,10 @@ import (
 
 	"github.com/mvrilo/go-redoc"
 	fiberredoc "github.com/mvrilo/go-redoc/fiber"
-)
+	/*"net/http"
+	_ "net/http/pprof"
+
+	"github.com/pkg/profile"*/)
 
 type Status struct {
 	Status string `json:"status" example:"OK"`
@@ -47,7 +50,7 @@ func main() {
 	}
 
 	app := fiber.New(fiber.Config{
-		Prefork:       true, // probably great in multi-core environments
+		Prefork:       false, // probably great in multi-core environments
 		CaseSensitive: true,
 		StrictRouting: true,
 		ProxyHeader:   "X-Real-IP",
@@ -85,6 +88,13 @@ func main() {
 		logger.Info("App started in %dus", time.Since(start).Microseconds())
 		return nil
 	})
+
+
+	/*defer profile.Start(profile.MemProfile).Stop()
+
+       go func() {
+               http.ListenAndServe(":8081", nil)
+       }()*/
 
 	shutdownHook(app)
 	app.Use(fiberredoc.New(doc))

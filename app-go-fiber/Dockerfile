@@ -4,7 +4,7 @@ RUN apk add --no-cache make bash upx
 
 COPY . .
 RUN make build
-RUN apk add --no-cache upx && upx --best app-go-fiber
+# RUN apk add --no-cache upx && upx --best app-go-fiber
 
 FROM alpine
 WORKDIR /app
