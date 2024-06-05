@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
 	"runtime"
 	"runtime/debug"
 	"slices"
@@ -46,6 +48,9 @@ func main() {
 
 	logger.Info(fmt.Sprintf("App is starting with Cores: %d", runtime.NumCPU()))
 	logger.Info(fmt.Sprintf("Current log level: %s", LOG_LEVEL))
+
+	shutdownHook(app)
+
 	log.Fatal(app.Listen(":8080"))
 }
 
@@ -61,7 +66,7 @@ func logRequest(c *fiber.Ctx, start time.Time, err error) {
 	}
 
 	if !slices.Contains(publicRoutes, c.Path()) || code == fiber.StatusInternalServerError {
-		var msg = fmt.Sprintf("%s %s %d %s %d ms", c.IP(), c.Method(), code, c.Path(), time.Since(start).Milliseconds())
+		var msg = fmt.Sprintf("[%15s] %s %d %s %d ms", c.IP(), c.Method(), code, c.Path(), time.Since(start).Milliseconds())
 		logger.Info(msg)
 	}
 }
@@ -84,4 +89,16 @@ func globalHandler() fiber.Handler {
 		logRequest(c, start, err)
 		return err
 	}
+}
+
+func shutdownHook(app *fiber.App) {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		logger.Info("Shutting down the server...")
+		if err := app.ShutdownWithTimeout(5 * time.Second); err != nil {
+			logger.Info("Error shutting down the server: %v", err)
+		}
+	}()
 }

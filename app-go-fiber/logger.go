@@ -43,26 +43,30 @@ func NewLogger() *Logger {
 	return &Logger{fileLogger: fileLogger}
 }
 
-func (logger *Logger) Info(msg string) {
-	v := fmt.Sprintf("%s %s", logger.caller(), msg)
+func formatLogMessage(msg string, a ...any) string {
+	return fmt.Sprintf("%s %s", logger.caller(), fmt.Sprintf(msg, a...))
+}
+
+func (logger *Logger) Info(msg string, a ...any) {
+	v := formatLogMessage(msg, a...)
 	slog.Info(v)
 	logger.fileLogger.Info(v)
 }
 
-func (logger *Logger) Error(msg string) {
-	v := fmt.Sprintf("%s %s", logger.caller(), msg)
+func (logger *Logger) Error(msg string, a ...any) {
+	v := formatLogMessage(msg, a...)
 	slog.Error(v)
 	logger.fileLogger.Error(v)
 }
 
-func (logger *Logger) Debug(msg string) {
-	v := fmt.Sprintf("%s %s", logger.caller(), msg)
+func (logger *Logger) Debug(msg string, a ...any) {
+	v := formatLogMessage(msg, a...)
 	slog.Debug(v)
 	logger.fileLogger.Debug(v)
 }
 
 func (l *Logger) caller() string {
-	_, fullFile, line, ok := runtime.Caller(2)
+	_, fullFile, line, ok := runtime.Caller(3)
 	if ok {
 		splitPath := strings.Split(fullFile, "/")
 		file := splitPath[len(splitPath)-1]
