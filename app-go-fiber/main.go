@@ -11,7 +11,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -28,12 +27,10 @@ var CPU_COUNT = runtime.GOMAXPROCS(0)
 func main() {
 
 	app := fiber.New(fiber.Config{
-		Prefork:       true, // probably great in multi-core environments
+		Prefork:       false, // probably great in multi-core environments
 		CaseSensitive: true,
 		StrictRouting: true,
 		ProxyHeader:   "X-Real-IP",
-		JSONEncoder:   sonic.Marshal,
-		JSONDecoder:   sonic.Unmarshal,
 	})
 
 	app.Use(globalHandler())

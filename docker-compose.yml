@@ -4,14 +4,14 @@ x-common:
   app:
     &common-app
     build:
-      context: ./app-go-fiber/
+      context: ./app-go-fiber
       dockerfile: ./Dockerfile
     environment:
       &common-app-environment
       X_API_KEY: ${X_API_KEY}
       LOG_LEVEL: ${LOG_LEVEL}
       JAVA_OPTS: -Dspring.profiles.active=${ENV} -Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XshowSettings:vm -XX:+PrintCommandLineFlags -XX:+TieredCompilation
-      GOMAXPROCS: "1" # otherwise go will use all available cores of the nodes
+      #GOMAXPROCS: "1" # otherwise go will use all available cores of the nodes
     mem_limit: 32m
     cpus: 0.5
     volumes:
@@ -28,8 +28,8 @@ x-common:
   ui:
     &common-ui
     build:
-      context: .
-      dockerfile: ./ui/Dockerfile
+      context: ./ui
+      dockerfile: ./Dockerfile
       args:
         ENV: ${ENV}
     mem_limit: 32m
