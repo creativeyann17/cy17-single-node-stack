@@ -12,10 +12,15 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+
+	_ "app-go-fiber/docs"
+
+	"github.com/mvrilo/go-redoc"
+	fiberredoc "github.com/mvrilo/go-redoc/fiber"
 )
 
 type Status struct {
-	Status string `json:"status"`
+	Status string `json:"status" example:"OK"`
 }
 
 var logger = NewLogger()
@@ -24,7 +29,22 @@ var PORT = getEnvOrDefault("PORT", "8080")
 var start = time.Now()
 var CPU_COUNT = runtime.GOMAXPROCS(0)
 
+//go:generate swag init
+
+// @title Fiber Example API
+// @version 1.0
+// @description Fiber example for openapi spec generation
+// @host localhost:8000
+// @BasePath /
 func main() {
+
+	doc := redoc.Redoc{
+		Title:       "Example API",
+		Description: "Example API Description",
+		SpecFile:    "./docs/swagger.json",
+		SpecPath:    "/docs/swagger.json",
+		DocsPath:    "/docs",
+	}
 
 	app := fiber.New(fiber.Config{
 		Prefork:       true, // probably great in multi-core environments
@@ -67,10 +87,25 @@ func main() {
 	})
 
 	shutdownHook(app)
-
-	log.Fatal(app.Listen(":" + PORT))
+	app.Use(fiberredoc.New(doc))
+	err := app.Listen(":" + PORT)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
+// ShowAccount godoc
+// @Summary      Show an account
+// @Description  get string by ID
+// @Tags         actuator
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Account ID"
+// @Success      200  {object}  Status
+// @Failure      400  {string}  string
+// @Failure      404  {string}  string
+// @Failure      500  {string}  string
+// @Router       /actuator/health/{id} [get]
 func healthHandler(c *fiber.Ctx) error {
 	health := Status{Status: "OK"}
 	return c.JSON(health)

@@ -9,19 +9,20 @@ DOCKER_IMAGE=$(PROJECT_NAME):$(BUILD_TAG)
 
 .SILENT:
 
-all: fmt vet install test
+install-swagger:
+	go get -u github.com/swaggo/swag/cmd/swag ;\
+	go install github.com/swaggo/swag/cmd/swag ;\
 
-build:
-	$(GO_BUILD_ENV) go build -v -ldflags="-s -w" -o $(PROJECT_NAME) .
+download:
+	go mod download
 
-install:
-	$(GO_BUILD_ENV) go install
+build: download generate
+	$(GO_BUILD_ENV) go build -v -ldflags="-s -w" -installsuffix cgo -o $(PROJECT_NAME) .
 
-vet:
-	go vet $(GO_FILES)
-
-fmt:
-	go fmt $(GO_FILES)
+format:
+	go vet $(GO_FILES) ;\
+	go fmt $(GO_FILES) ;\
+	go mod tidy ;\
 
 dev:
 	air
@@ -35,3 +36,6 @@ integration_test:
 docker: build
 	docker build -t $(DOCKER_IMAGE) .;\
   rm -f $(PROJECT_NAME).bin 2> /dev/null; \
+
+generate: install-swagger
+	go generate ;\
