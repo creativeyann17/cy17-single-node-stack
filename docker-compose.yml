@@ -12,7 +12,7 @@ x-common:
       LOG_LEVEL: ${LOG_LEVEL}
       JAVA_OPTS: -Dspring.profiles.active=${ENV} -Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XshowSettings:vm -XX:+PrintCommandLineFlags -XX:+TieredCompilation
       GOMAXPROCS: "1" # otherwise go will use all available cores of the nodes
-    mem_limit: 32m
+    mem_limit: 64m
     cpus: 0.5
     volumes:
       - /var/log/app:/app/logs
