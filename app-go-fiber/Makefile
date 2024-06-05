@@ -12,7 +12,7 @@ DOCKER_IMAGE=$(PROJECT_NAME):$(BUILD_TAG)
 all: fmt vet install test
 
 build:
-	$(GO_BUILD_ENV) go build -v -o $(PROJECT_NAME) .
+	$(GO_BUILD_ENV) go build -v -ldflags="-s -w" -o $(PROJECT_NAME) .
 
 install:
 	$(GO_BUILD_ENV) go install
