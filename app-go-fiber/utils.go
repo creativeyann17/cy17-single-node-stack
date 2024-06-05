@@ -16,3 +16,10 @@ func ifThenElse(condition bool, a interface{}, b interface{}) interface{} {
 	}
 	return b
 }
+
+func ifEmpty(str string, def string) string {
+	if str == "" {
+		return def
+	}
+	return str
+}

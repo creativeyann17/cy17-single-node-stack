@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log/slog"
+	"os"
 	"runtime"
 	"strings"
 
@@ -44,7 +45,7 @@ func NewLogger() *Logger {
 }
 
 func formatLogMessage(msg string, a ...any) string {
-	return fmt.Sprintf("%s %s", logger.caller(), fmt.Sprintf(msg, a...))
+	return fmt.Sprintf("[%4d] %s %s", os.Getpid(), logger.caller(), fmt.Sprintf(msg, a...))
 }
 
 func (logger *Logger) Info(msg string, a ...any) {

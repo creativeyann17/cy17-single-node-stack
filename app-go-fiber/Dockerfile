@@ -11,6 +11,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -installsuffix cgo -o 
 FROM alpine
 WORKDIR /app
 COPY --from=build /build/app .
-RUN apk add --no-cache curl
-
-ENTRYPOINT ["./app"]
+RUN apk add --no-cache curl dumb-init
+# dumb-init fix Prefork error if PID = 1
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["./app"]

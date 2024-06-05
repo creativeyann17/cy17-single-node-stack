@@ -8,8 +8,10 @@ import (
 	"runtime"
 	"runtime/debug"
 	"slices"
+	"syscall"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -19,13 +21,19 @@ type Status struct {
 
 var logger = NewLogger()
 var publicRoutes = []string{"/actuator/health", "/favicon.ico"}
+var PORT = getEnvOrDefault("PORT", "8080")
+var start = time.Now()
+var CPU_COUNT = runtime.GOMAXPROCS(0)
 
 func main() {
 
 	app := fiber.New(fiber.Config{
+		Prefork:       true, // probably great in multi-core environments
 		CaseSensitive: true,
 		StrictRouting: true,
 		ProxyHeader:   "X-Real-IP",
+		JSONEncoder:   sonic.Marshal,
+		JSONDecoder:   sonic.Unmarshal,
 	})
 
 	app.Use(globalHandler())
@@ -37,6 +45,10 @@ func main() {
 	api.Get("/hello", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
+	api.Get("/param/:param", func(c *fiber.Ctx) error {
+		param := c.Params("param")
+		return c.SendString("Param: " + param)
+	})
 	api.Get("/error", func(c *fiber.Ctx) error {
 		p := c.Query("panic")
 		if p == "true" {
@@ -46,12 +58,20 @@ func main() {
 		}
 	})
 
-	logger.Info(fmt.Sprintf("App is starting with Cores: %d", runtime.NumCPU()))
-	logger.Info(fmt.Sprintf("Current log level: %s", LOG_LEVEL))
+	app.Hooks().OnListen(func(data fiber.ListenData) error {
+		if fiber.IsChild() {
+			return nil
+		}
+		logger.Info(fmt.Sprintf("App is starting with Cores: %d (total available: %d)", CPU_COUNT, runtime.NumCPU()))
+		logger.Info(fmt.Sprintf("Current log level: %s", LOG_LEVEL))
+		logger.Info("HTTP server started on port: " + data.Port)
+		logger.Info("App started in %dus", time.Since(start).Microseconds())
+		return nil
+	})
 
 	shutdownHook(app)
 
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(":" + PORT))
 }
 
 func healthHandler(c *fiber.Ctx) error {
@@ -66,7 +86,7 @@ func logRequest(c *fiber.Ctx, start time.Time, err error) {
 	}
 
 	if !slices.Contains(publicRoutes, c.Path()) || code == fiber.StatusInternalServerError {
-		var msg = fmt.Sprintf("[%15s] %s %d %s %d ms", c.IP(), c.Method(), code, c.Path(), time.Since(start).Milliseconds())
+		var msg = fmt.Sprintf("[%15s] %s %d %s %dus", ifEmpty(c.IP(), "0.0.0.0"), c.Method(), code, c.Path(), time.Since(start).Microseconds())
 		logger.Info(msg)
 	}
 }
@@ -93,7 +113,7 @@ func globalHandler() fiber.Handler {
 
 func shutdownHook(app *fiber.App) {
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
 		<-c
 		logger.Info("Shutting down the server...")
