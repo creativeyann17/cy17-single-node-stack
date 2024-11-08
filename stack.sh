@@ -62,12 +62,12 @@ init()
 
 start()
 {
-  docker-compose -p $STACK_NAME up --build $1
+  docker compose -p $STACK_NAME up --build $1
 }
 
 stop()
 {
-  docker-compose -p $STACK_NAME down --rmi all
+  docker compose -p $STACK_NAME down --rmi all
 }
 
 dev()
